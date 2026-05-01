@@ -43,7 +43,7 @@
             cmbTransmission = new ComboBox();
             cmbFueltype = new ComboBox();
             button1 = new Button();
-            dataGridView1 = new DataGridView();
+            dataGridViewCar = new DataGridView();
             label8 = new Label();
             label9 = new Label();
             label10 = new Label();
@@ -51,7 +51,7 @@
             label12 = new Label();
             label13 = new Label();
             label14 = new Label();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewCar).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -181,14 +181,15 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += btnAdd_Click;
             // 
-            // dataGridView1
+            // dataGridViewCar
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(227, 369);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(979, 211);
-            dataGridView1.TabIndex = 15;
+            dataGridViewCar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCar.Location = new Point(71, 369);
+            dataGridViewCar.Name = "dataGridViewCar";
+            dataGridViewCar.RowHeadersWidth = 51;
+            dataGridViewCar.Size = new Size(1255, 350);
+            dataGridViewCar.TabIndex = 15;
+            dataGridViewCar.CellContentClick += dataGridView1_CellContentClick;
             // 
             // label8
             // 
@@ -265,7 +266,7 @@
             Controls.Add(label10);
             Controls.Add(label9);
             Controls.Add(label8);
-            Controls.Add(dataGridView1);
+            Controls.Add(dataGridViewCar);
             Controls.Add(button1);
             Controls.Add(cmbFueltype);
             Controls.Add(cmbTransmission);
@@ -283,7 +284,8 @@
             Controls.Add(label1);
             Name = "Car_form";
             Text = "Car_form";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            Load += Car_form_Load;
+            ((System.ComponentModel.ISupportInitialize)dataGridViewCar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -305,7 +307,7 @@
         private ComboBox cmbTransmission;
         private ComboBox cmbFueltype;
         private Button button1;
-        private DataGridView dataGridView1;
+        private DataGridView dataGridViewCar;
         private Label label8;
         private Label label9;
         private Label label10;

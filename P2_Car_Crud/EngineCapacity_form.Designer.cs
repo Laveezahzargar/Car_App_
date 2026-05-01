@@ -35,11 +35,11 @@
             txtDescription = new TextBox();
             txtCapacity = new TextBox();
             button1 = new Button();
-            dataGridView1 = new DataGridView();
+            dataGridViewEngine = new DataGridView();
             label4 = new Label();
             label5 = new Label();
             label6 = new Label();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewEngine).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -92,7 +92,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(927, 304);
+            button1.Location = new Point(930, 304);
             button1.Name = "button1";
             button1.Size = new Size(108, 46);
             button1.TabIndex = 6;
@@ -100,14 +100,15 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += btnAdd_Click;
             // 
-            // dataGridView1
+            // dataGridViewEngine
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(210, 372);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(875, 202);
-            dataGridView1.TabIndex = 7;
+            dataGridViewEngine.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewEngine.Location = new Point(52, 356);
+            dataGridViewEngine.Name = "dataGridViewEngine";
+            dataGridViewEngine.RowHeadersWidth = 51;
+            dataGridViewEngine.Size = new Size(1261, 367);
+            dataGridViewEngine.TabIndex = 7;
+            dataGridViewEngine.CellContentClick += dataGridViewEngine_CellContentClick;
             // 
             // label4
             // 
@@ -145,7 +146,7 @@
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(label4);
-            Controls.Add(dataGridView1);
+            Controls.Add(dataGridViewEngine);
             Controls.Add(button1);
             Controls.Add(txtCapacity);
             Controls.Add(txtDescription);
@@ -156,7 +157,7 @@
             Name = "EngineCapacity_form";
             Text = "  ";
             Load += EngineCapacity_form_Load;
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewEngine).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -170,7 +171,7 @@
         private TextBox txtDescription;
         private TextBox txtCapacity;
         private Button button1;
-        private DataGridView dataGridView1;
+        private DataGridView dataGridViewEngine;
         private Label label4;
         private Label label5;
         private Label label6;

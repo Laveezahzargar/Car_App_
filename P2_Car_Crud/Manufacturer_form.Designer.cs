@@ -33,10 +33,10 @@
             txtName = new TextBox();
             txtDescription = new TextBox();
             button1 = new Button();
-            dataGridView1 = new DataGridView();
+            dataGridViewManufacturer = new DataGridView();
             label3 = new Label();
             label4 = new Label();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewManufacturer).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -81,14 +81,15 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += btnAdd_Click;
             // 
-            // dataGridView1
+            // dataGridViewManufacturer
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(290, 380);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(830, 265);
-            dataGridView1.TabIndex = 5;
+            dataGridViewManufacturer.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewManufacturer.Location = new Point(70, 380);
+            dataGridViewManufacturer.Name = "dataGridViewManufacturer";
+            dataGridViewManufacturer.RowHeadersWidth = 51;
+            dataGridViewManufacturer.Size = new Size(1228, 327);
+            dataGridViewManufacturer.TabIndex = 5;
+            dataGridViewManufacturer.CellContentClick += dataGridViewManufacturer_CellContentClick;
             // 
             // label3
             // 
@@ -116,7 +117,7 @@
             ClientSize = new Size(1367, 743);
             Controls.Add(label4);
             Controls.Add(label3);
-            Controls.Add(dataGridView1);
+            Controls.Add(dataGridViewManufacturer);
             Controls.Add(button1);
             Controls.Add(txtDescription);
             Controls.Add(txtName);
@@ -125,7 +126,7 @@
             Name = "Manufacturer_form";
             Text = "Manufacturer_form";
             Load += Manufacturer_form_Load;
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewManufacturer).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -137,7 +138,7 @@
         private TextBox txtName;
         private TextBox txtDescription;
         private Button button1;
-        private DataGridView dataGridView1;
+        private DataGridView dataGridViewManufacturer;
         private Label label3;
         private Label label4;
     }

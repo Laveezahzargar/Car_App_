@@ -5,7 +5,6 @@ namespace P2_Car_Crud
         public Main_form()
         {
             InitializeComponent();
-            MessageBox.Show("Mainform loaded");
         }
         private void btnCars_Click(object sender, EventArgs e)
         {

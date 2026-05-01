@@ -15,10 +15,20 @@ namespace P2_Car_Crud
 {
     public partial class Car_form : Form
     {
+        int selectedCarId = 0;
+        int filterManufacturerId = 0;
+        int filterEngineId = 0;
+
         string connectionString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
-        public Car_form()
+        public Car_form(int? manuId = null, int? engineId = null)
         {
             InitializeComponent();
+
+            if (manuId != null)
+                filterManufacturerId = manuId.Value;
+
+            if (engineId != null)
+                filterEngineId = engineId.Value;
         }
         private void Car_form_Load(object sender, EventArgs e)
         {
@@ -45,6 +55,17 @@ namespace P2_Car_Crud
             cmbTransmission.SelectedIndex = 0;
             cmbFueltype.SelectedIndex = 0;
         }
+        public void SetManufacturerFilter(int id)
+        {
+            filterManufacturerId = id;
+            filterEngineId = 0;
+        }
+
+        public void SetEngineFilter(int id)
+        {
+            filterEngineId = id;
+            filterManufacturerId = 0;
+        }
         void LoadCars()
         {
             using (SqliteConnection con = new SqliteConnection(connectionString))
@@ -56,22 +77,120 @@ namespace P2_Car_Crud
                     Cars.Name,
                     Manufacturer.Name AS Manufacturer,
                     EngineCapacity.Capacity,
+                    Cars.Transmission,
+                    Cars.FuelType,
                     Cars.Price,
                     Cars.Year
                     FROM Cars
                     LEFT JOIN Manufacturer ON Cars.ManufacturerId = Manufacturer.Id
                     LEFT JOIN EngineCapacity ON Cars.EngineCapacityId = EngineCapacity.Id
+                    WHERE 1=1
                    ";
+
+                if (filterManufacturerId != 0)
+                {
+                    query += " AND Cars.ManufacturerId = @manuId";
+                }
+
+                if (filterEngineId != 0)
+                {
+                    query += " AND Cars.EngineCapacityId = @engineId";
+                }
 
                 DataTable dt = new DataTable();
 
-                using (var cmd = new SqliteCommand(query, con))
+                SqliteCommand cmd = new SqliteCommand(query, con);
+
+                if (filterManufacturerId != 0)
+                {
+                    cmd.Parameters.AddWithValue("@manuId", filterManufacturerId);
+                }
+
+                if (filterEngineId != 0)
+                {
+                    cmd.Parameters.AddWithValue("@engineId", filterEngineId);
+                }
+
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     dt.Load(reader);
                 }
 
-                dataGridView1.DataSource = dt;
+                dataGridViewCar.DataSource = dt;
+
+                if (!dataGridViewCar.Columns.Contains("Edit"))
+                {
+                    DataGridViewButtonColumn editBtn = new DataGridViewButtonColumn();
+                    editBtn.Name = "Edit";
+                    editBtn.HeaderText = "Edit";
+                    editBtn.Text = "Edit";
+                    editBtn.UseColumnTextForButtonValue = true;
+                    dataGridViewCar.Columns.Add(editBtn);
+                }
+
+                if (!dataGridViewCar.Columns.Contains("Delete"))
+                {
+                    DataGridViewButtonColumn deleteBtn = new DataGridViewButtonColumn();
+                    deleteBtn.Name = "Delete";
+                    deleteBtn.HeaderText = "Delete";
+                    deleteBtn.Text = "Delete";
+                    deleteBtn.UseColumnTextForButtonValue = true;
+                    dataGridViewCar.Columns.Add(deleteBtn);
+                }
+            }
+        }
+        void LoadCarToForm(int rowIndex)
+        {
+            var row = dataGridViewCar.Rows[rowIndex];
+
+            selectedCarId = Convert.ToInt32(row.Cells["Id"].Value);
+
+            txtName.Text = row.Cells["Name"].Value.ToString();
+            txtPrice.Text = row.Cells["Price"].Value.ToString();
+            txtYear.Text = row.Cells["Year"].Value.ToString();
+
+            cmbManufacturer.Text = row.Cells["Manufacturer"].Value.ToString();
+            cmbEngine.Text = row.Cells["Capacity"].Value.ToString();
+            cmbTransmission.Text = row.Cells["Transmission"].Value.ToString();
+            cmbFueltype.Text = row.Cells["FuelType"].Value.ToString();
+
+            button1.Text = "Update";
+        }
+        void DeleteCar(int id)
+        {
+            var confirm = MessageBox.Show("Delete this car?", "Confirm", MessageBoxButtons.YesNo);
+
+            if (confirm == DialogResult.Yes)
+            {
+                using (SqliteConnection con = new SqliteConnection(connectionString))
+                {
+                    con.Open();
+
+                    string query = "DELETE FROM Cars WHERE Id=@id";
+                    SqliteCommand cmd = new SqliteCommand(query, con);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.ExecuteNonQuery();
+                }
+
+                LoadCars();
+            }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            int carId = Convert.ToInt32(dataGridViewCar.Rows[e.RowIndex].Cells["Id"].Value);
+
+            if (dataGridViewCar.Columns[e.ColumnIndex].Name == "Edit")
+            {
+                LoadCarToForm(e.RowIndex);
+            }
+
+            if (dataGridViewCar.Columns[e.ColumnIndex].Name == "Delete")
+            {
+                DeleteCar(carId);
             }
         }
         void LoadManufacturers()
@@ -110,10 +229,17 @@ namespace P2_Car_Crud
                 }
 
                 cmbEngine.DataSource = null;
+                cmbEngine.DataSource = dt;
                 cmbEngine.DisplayMember = "Capacity";
                 cmbEngine.ValueMember = "Id";
-                cmbEngine.DataSource = dt;
             }
+        }
+        private void btnShowAll_Click(object sender, EventArgs e)
+        {
+            filterManufacturerId = 0;
+            filterEngineId = 0;
+
+            LoadCars();
         }
         void ClearForm()
         {
@@ -121,44 +247,89 @@ namespace P2_Car_Crud
             txtPrice.Clear();
             txtYear.Clear();
 
-            cmbManufacturer.SelectedIndex = 0;
-            cmbEngine.SelectedIndex = 0;
             cmbTransmission.SelectedIndex = 0;
             cmbFueltype.SelectedIndex = 0;
+
+            if (cmbManufacturer.Items.Count > 0)
+                cmbManufacturer.SelectedIndex = 0;
+
+            if (cmbEngine.Items.Count > 0)
+                cmbEngine.SelectedIndex = 0;
+
+            selectedCarId = 0;
+            button1.Text = "Add";
         }
         private void btnAdd_Click(object sender, EventArgs e)
         {
             try
             {
-                if (txtName.Text == "" || txtPrice.Text == "" || txtYear.Text == "" ||
-                cmbManufacturer.SelectedIndex == -1 || cmbEngine.SelectedIndex == -1 ||
-                cmbTransmission.SelectedIndex == -1 ||
-                cmbFueltype.SelectedIndex == -1)
+                if (selectedCarId == 0)
                 {
-                    MessageBox.Show("Please fill all fields");
-                    return;
-                }
-                using (SqliteConnection con = new SqliteConnection(connectionString))
-                {
-                    con.Open();
+                    if (txtName.Text == "" || txtPrice.Text == "" || txtYear.Text == "" ||
+                        cmbManufacturer.SelectedIndex == -1 || cmbEngine.SelectedIndex == -1 ||
+                        cmbTransmission.SelectedIndex == -1 ||
+                        cmbFueltype.SelectedIndex == -1)
+                    {
+                        MessageBox.Show("Please fill all fields");
+                        return;
+                    }
+                    using (SqliteConnection con = new SqliteConnection(connectionString))
+                    {
+                        con.Open();
 
-                    string query = @"INSERT INTO Cars 
+                        string query = @"INSERT INTO Cars 
                                 (Name, ManufacturerId, EngineCapacityId, Transmission, FuelType, Price, Year)
                                 VALUES (@name, @manu, @engine, @transmission, @fueltype, @price, @year)";
 
-                    SqliteCommand cmd = new SqliteCommand(query, con);
+                        SqliteCommand cmd = new SqliteCommand(query, con);
 
-                    cmd.Parameters.AddWithValue("@name", txtName.Text);
-                    cmd.Parameters.AddWithValue("@manu", cmbManufacturer.SelectedValue);
-                    cmd.Parameters.AddWithValue("@engine", cmbEngine.SelectedValue);
-                    cmd.Parameters.AddWithValue("@transmission", cmbTransmission.Text);
-                    cmd.Parameters.AddWithValue("@fueltype", cmbFueltype.Text);
-                    cmd.Parameters.AddWithValue("@price", txtPrice.Text);
-                    cmd.Parameters.AddWithValue("@year", txtYear.Text);
-                    cmd.ExecuteNonQuery();
+                        cmd.Parameters.AddWithValue("@name", txtName.Text);
+                        cmd.Parameters.AddWithValue("@manu", cmbManufacturer.SelectedValue);
+                        cmd.Parameters.AddWithValue("@engine", cmbEngine.SelectedValue);
+                        cmd.Parameters.AddWithValue("@transmission", cmbTransmission.Text);
+                        cmd.Parameters.AddWithValue("@fueltype", cmbFueltype.Text);
+                        cmd.Parameters.AddWithValue("@price", txtPrice.Text);
+                        cmd.Parameters.AddWithValue("@year", txtYear.Text);
+                        cmd.ExecuteNonQuery();
+                    }
+                    LoadCars();
+                    ClearForm();
                 }
-                MessageBox.Show("Car added successfully");
-                LoadCars();
+                else
+                {
+                    using (SqliteConnection con = new SqliteConnection(connectionString))
+                    {
+                        con.Open();
+
+                        string query = @"UPDATE Cars SET 
+                                        Name=@name,
+                                        ManufacturerId=@manu,
+                                        EngineCapacityId=@engine,
+                                        Transmission=@transmission,
+                                        FuelType=@fueltype,
+                                        Price=@price,
+                                        Year=@year
+                                        WHERE Id=@id";
+
+                        SqliteCommand cmd = new SqliteCommand(query, con);
+
+                        cmd.Parameters.AddWithValue("@id", selectedCarId);
+                        cmd.Parameters.AddWithValue("@name", txtName.Text);
+                        cmd.Parameters.AddWithValue("@manu", cmbManufacturer.SelectedValue);
+                        cmd.Parameters.AddWithValue("@engine", cmbEngine.SelectedValue);
+                        cmd.Parameters.AddWithValue("@transmission", cmbTransmission.Text);
+                        cmd.Parameters.AddWithValue("@fueltype", cmbFueltype.Text);
+                        cmd.Parameters.AddWithValue("@price", txtPrice.Text);
+                        cmd.Parameters.AddWithValue("@year", txtYear.Text);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                    selectedCarId = 0;
+                    button1.Text = "Add";
+                    ClearForm();
+                    LoadCars();
+                }
+                
             }
             catch (Exception ex)
             {

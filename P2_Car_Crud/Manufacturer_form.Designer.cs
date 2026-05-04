@@ -126,7 +126,14 @@
             Name = "Manufacturer_form";
             Text = "Manufacturer_form";
             Load += Manufacturer_form_Load;
-            ((System.ComponentModel.ISupportInitialize)dataGridViewManufacturer).EndInit();
+
+            txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            dataGridViewManufacturer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
             ResumeLayout(false);
             PerformLayout();
         }

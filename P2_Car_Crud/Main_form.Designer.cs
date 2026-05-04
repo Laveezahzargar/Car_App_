@@ -35,6 +35,7 @@
             // 
             // button1
             // 
+            button1.Anchor = AnchorStyles.None;
             button1.Location = new Point(159, 161);
             button1.Name = "button1";
             button1.Size = new Size(94, 58);
@@ -45,6 +46,7 @@
             // 
             // button2
             // 
+            button2.Anchor = AnchorStyles.None;
             button2.Location = new Point(287, 161);
             button2.Name = "button2";
             button2.Size = new Size(140, 58);
@@ -55,6 +57,7 @@
             // 
             // button3
             // 
+            button3.Anchor = AnchorStyles.None;
             button3.Location = new Point(459, 161);
             button3.Name = "button3";
             button3.Size = new Size(157, 58);
@@ -73,6 +76,7 @@
             Controls.Add(button1);
             Name = "Main_form";
             Text = "Form1";
+            Load += MainForm_Load;
             ResumeLayout(false);
         }
 

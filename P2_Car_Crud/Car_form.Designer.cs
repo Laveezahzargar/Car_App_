@@ -286,6 +286,20 @@
             Text = "Car_form";
             Load += Car_form_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewCar).EndInit();
+
+            txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtPrice.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtYear.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            cmbManufacturer.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbEngine.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbTransmission.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbFueltype.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            dataGridViewCar.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
             ResumeLayout(false);
             PerformLayout();
         }

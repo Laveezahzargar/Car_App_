@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using Serilog;
 
 namespace P2_Car_Crud
 {
@@ -20,54 +21,91 @@ namespace P2_Car_Crud
         public EngineCapacity_form()
         {
             InitializeComponent();
+
+            Color bg = Color.White;
+            Color panel = Color.FromArgb(245, 245, 245);
+            Color accent = Color.FromArgb(0, 120, 215);
+            Color text = Color.Black;
         }
         private void EngineCapacity_form_Load(object sender, EventArgs e)
         {
+            StyleButton(button1);
+            ApplyTheme();
             LoadEngineCapacity();
+            dataGridViewEngine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+        private void StyleButton(Button btn)
+        {
+            btn.BackColor = Color.FromArgb(0, 120, 215);
+            btn.ForeColor = Color.White;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+        }
+        private void ApplyTheme()
+        {
+            this.BackColor = Color.White;
         }
         void LoadEngineCapacity()
         {
-            using (SqliteConnection con = new SqliteConnection(connectionString))
+            try
             {
-                con.Open();
-
-                DataTable dt = new DataTable();
-
-                using (var cmd = new SqliteCommand(
-                    "SELECT Id,Name,Description,Capacity FROM EngineCapacity", con))
-                using (var reader = cmd.ExecuteReader())
+                using (SqliteConnection con = new SqliteConnection(connectionString))
                 {
-                    dt.Load(reader);
-                }
-                dataGridViewEngine.DataSource = dt;
+                    con.Open();
 
-                if (!dataGridViewEngine.Columns.Contains("ViewCars"))
-                {
-                    DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
-                    btn.Name = "ViewCars";
-                    btn.HeaderText = "Cars";
-                    btn.Text = "View Cars";
-                    btn.UseColumnTextForButtonValue = true;
+                    DataTable dt = new DataTable();
 
-                    dataGridViewEngine.Columns.Add(btn);
-                }
-                if (!dataGridViewEngine.Columns.Contains("Edit"))
-                {
-                    DataGridViewButtonColumn editBtn = new DataGridViewButtonColumn();
-                    editBtn.Name = "Edit";
-                    editBtn.Text = "Edit";
-                    editBtn.UseColumnTextForButtonValue = true;
-                    dataGridViewEngine.Columns.Add(editBtn);
-                }
+                    using (var cmd = new SqliteCommand(
+                        "SELECT Id,Name,Description,Capacity FROM EngineCapacity", con))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        dt.Load(reader);
+                    }
+                    dataGridViewEngine.DataSource = dt;
 
-                if (!dataGridViewEngine.Columns.Contains("Delete"))
-                {
-                    DataGridViewButtonColumn deleteBtn = new DataGridViewButtonColumn();
-                    deleteBtn.Name = "Delete";
-                    deleteBtn.Text = "Delete";
-                    deleteBtn.UseColumnTextForButtonValue = true;
-                    dataGridViewEngine.Columns.Add(deleteBtn);
+                    if (!dataGridViewEngine.Columns.Contains("ViewCars"))
+                    {
+                        DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
+                        btn.Name = "ViewCars";
+                        btn.HeaderText = "Cars";
+                        btn.Text = "View Cars";
+                        btn.UseColumnTextForButtonValue = true;
+
+                        dataGridViewEngine.Columns.Add(btn);
+                    }
+                    if (!dataGridViewEngine.Columns.Contains("Edit"))
+                    {
+                        DataGridViewButtonColumn editBtn = new DataGridViewButtonColumn();
+                        editBtn.Name = "Edit";
+                        editBtn.Text = "Edit";
+                        editBtn.UseColumnTextForButtonValue = true;
+                        dataGridViewEngine.Columns.Add(editBtn);
+                    }
+
+                    if (!dataGridViewEngine.Columns.Contains("Delete"))
+                    {
+                        DataGridViewButtonColumn deleteBtn = new DataGridViewButtonColumn();
+                        deleteBtn.Name = "Delete";
+                        deleteBtn.Text = "Delete";
+                        deleteBtn.UseColumnTextForButtonValue = true;
+                        dataGridViewEngine.Columns.Add(deleteBtn);
+                    }
+                    dataGridViewEngine.EnableHeadersVisualStyles = false;
+                    dataGridViewEngine.DefaultCellStyle.SelectionBackColor = Color.White;
+
+                    dataGridViewEngine.Columns["ViewCars"].DefaultCellStyle.BackColor = Color.FromArgb(0, 120, 215);
+                    dataGridViewEngine.Columns["ViewCars"].DefaultCellStyle.ForeColor = Color.White;
+
+                    dataGridViewEngine.Columns["Edit"].DefaultCellStyle.BackColor = Color.FromArgb(40, 167, 69);
+                    dataGridViewEngine.Columns["Edit"].DefaultCellStyle.ForeColor = Color.White;
+                    dataGridViewEngine.Columns["Delete"].DefaultCellStyle.BackColor = Color.FromArgb(220, 53, 69);
+                    dataGridViewEngine.Columns["Delete"].DefaultCellStyle.ForeColor = Color.White;
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to load engine capacities.");
+                MessageBox.Show("Operation failed.");
             }
         }
         private void dataGridViewEngine_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -81,7 +119,7 @@ namespace P2_Car_Crud
             if (columnName == "ViewCars")
             {
                 Car_form carForm = new Car_form(null, id);
-                carForm.Show();
+                carForm.ShowDialog();
             }
 
             else if (columnName == "Edit")
@@ -101,18 +139,41 @@ namespace P2_Car_Crud
         }
         void DeleteEngine(int id)
         {
-            using (SqliteConnection con = new SqliteConnection(connectionString))
+            try
             {
-                con.Open();
+                using (SqliteConnection con = new SqliteConnection(connectionString))
+                {
+                    con.Open();
 
-                SqliteCommand cmd = new SqliteCommand(
-                    "DELETE FROM EngineCapacity WHERE Id=@id", con);
+                    SqliteCommand checkCmd = new SqliteCommand(
+                    "SELECT COUNT(*) FROM Cars WHERE EngineCapacityId = @id", con);
 
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.ExecuteNonQuery();
+                    checkCmd.Parameters.AddWithValue("@id", id);
+
+                    long count = (long)checkCmd.ExecuteScalar();
+
+                    if (count > 0)
+                    {
+                        MessageBox.Show($"Cannot delete.{count} car(s) are linked to this engine capacity.");
+                        return;
+                    }
+
+                    SqliteCommand cmd = new SqliteCommand(
+                        "DELETE FROM EngineCapacity WHERE Id=@id", con);
+
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.ExecuteNonQuery();
+
+                    Log.Warning("Engine capacity deleted: {Id}", id);
+                }
+
+                LoadEngineCapacity();
             }
-
-            LoadEngineCapacity();
+            catch(Exception ex)
+            {
+                Log.Error(ex, "Failed to delete engine capacities.");
+                MessageBox.Show("Operation failed.");
+            }
         }
         private void btnAdd_Click(object sender, EventArgs e)
         {
@@ -140,6 +201,8 @@ namespace P2_Car_Crud
                         cmd.Parameters.AddWithValue("@description", txtDescription.Text);
                         cmd.Parameters.AddWithValue("@capacity", txtCapacity.Text);
                         cmd.ExecuteNonQuery();
+
+                        Log.Information("User added new engine capacity: {EngineCapacityName}", txtName.Text);
                     }
                     else
                     {
@@ -154,6 +217,8 @@ namespace P2_Car_Crud
                         cmd.Parameters.AddWithValue("@cap", txtCapacity.Text);
                         cmd.ExecuteNonQuery();
 
+                        Log.Information("User updated engine capacity: {EngineCapacityId}, Name: {EngineCapacityName}", selectedEngineId, txtName.Text);
+
                         selectedEngineId = 0;
                         button1.Text = "Add";
                     }
@@ -166,7 +231,8 @@ namespace P2_Car_Crud
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.Message);
+                Log.Error(ex, "Failed to add engine.");
+                MessageBox.Show("Operation failed.");
             }
         }
 

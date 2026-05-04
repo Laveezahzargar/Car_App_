@@ -158,6 +158,15 @@
             Text = "  ";
             Load += EngineCapacity_form_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewEngine).EndInit();
+
+            txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtCapacity.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            dataGridViewEngine.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
             ResumeLayout(false);
             PerformLayout();
         }
